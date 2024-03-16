@@ -6,7 +6,7 @@ import { faEnvelope } from "@fortawesome/free-solid-svg-icons"
 
 const Layout = ({ location, title, subtitle, children }) => {
   const data = useStaticQuery(graphql`
-    query SocialQuery {
+    query LayoutQuery {
       site {
         siteMetadata {
           social {
@@ -15,6 +15,9 @@ const Layout = ({ location, title, subtitle, children }) => {
             github
           }
         }
+      }
+      gitCommit(latest: { eq: true }) {
+        hash
       }
     }
   `)
@@ -47,6 +50,8 @@ const Layout = ({ location, title, subtitle, children }) => {
     )
   }
 
+  const revision = data.gitCommit.hash;
+
   return (
     <div className="global-wrapper" data-is-root-path={isRootPath}>
       <header className="global-header">{header}</header>
@@ -54,7 +59,7 @@ const Layout = ({ location, title, subtitle, children }) => {
       <footer>
         Generated from
         {` `}
-        <a href="https://github.com/seven-mile/blog-ng">blog-ng</a>
+        <a href={`https://github.com/seven-mile/blog-ng${(revision ? `/commit/${revision}` : '')}`}>blog-ng</a>
         {` `}
         @ {new Date().toLocaleString()} by
         {` `}
