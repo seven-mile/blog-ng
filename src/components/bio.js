@@ -19,7 +19,9 @@ const Bio = () => {
             summary
           }
           social {
+            email
             twitter
+            github
           }
         }
       }
@@ -37,9 +39,10 @@ const Bio = () => {
         layout="fixed"
         formats={["auto", "webp", "avif"]}
         src="../images/profile-pic.jpg"
-        width={50}
-        height={50}
+        width={75}
+        height={75}
         quality={95}
+        aspectRatio={1}
         alt="Profile picture"
       />
       {author?.name && (
@@ -47,6 +50,8 @@ const Bio = () => {
           <strong>{author.name}</strong>
           <br />
           {author?.summary || null}
+          <br />
+          {social?.email}
         </p>
       )}
     </div>
