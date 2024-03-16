@@ -12,12 +12,14 @@ module.exports = {
     title: `7mile`,
     author: {
       name: `7mile`,
-      summary: `Performance as a Science.`,
+      summary: `Beijing Univ. of Posts and Telecommunications`,
     },
-    description: `A starter blog demonstrating what Gatsby can do.`,
-    siteUrl: `https://gatsbystarterblogsource.gatsbyjs.io/`,
+    description: `一切都有其意义，包括停滞不前的日子。`,
+    siteUrl: `https://7li.moe/`,
     social: {
+      email: `i@7li.moe`,
       twitter: `sewenmile`,
+      github: `seven-mile`,
     },
   },
   plugins: [
