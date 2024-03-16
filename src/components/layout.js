@@ -50,7 +50,7 @@ const Layout = ({ location, title, subtitle, children }) => {
     )
   }
 
-  const revision = data.gitCommit.hash;
+  const revision = data.gitCommit.hash
 
   return (
     <div className="global-wrapper" data-is-root-path={isRootPath}>
@@ -59,9 +59,11 @@ const Layout = ({ location, title, subtitle, children }) => {
       <footer>
         Generated from
         {` `}
-        <a href={`https://github.com/seven-mile/blog-ng${(revision ? `/commit/${revision}` : '')}`}>blog-ng</a>
+        <a href={`https://github.com/seven-mile/blog-ng${(revision ? `/commit/${revision}` : '')}`}>
+          blog-ng@{revision ? revision.slice(0, 7) : 'latest'}
+        </a>
         {` `}
-        @ {new Date().toLocaleString()} by
+        by
         {` `}
         <a href="https://www.gatsbyjs.com">Gatsby</a>.
       </footer>
