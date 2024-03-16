@@ -1,0 +1,25 @@
+name: Gatsby Publish
+
+on:
+  push:
+    branches:
+      - main
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  repository_dispatch:
+    type: ["content-update"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: enriikke/gatsby-gh-pages-action@v2
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          git-config-name: seven-mile
+          git-config-email: i@7li.moe
+          skip-publish: true
+          deploy-repo: seven-mile.github.io
+          deploy-branch: master
