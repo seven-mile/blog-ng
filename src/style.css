@@ -340,7 +340,14 @@ a:focus {
 }
 
 .icon-button {
-  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: var(--spacing-2);
+}
+
+.icon-button-link {
+  padding: var(--spacing-1);
 }
 
 /* Media queries */
