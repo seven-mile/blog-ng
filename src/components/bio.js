@@ -42,7 +42,6 @@ const Bio = () => {
         width={75}
         height={75}
         quality={95}
-        aspectRatio={1}
         alt="Profile picture"
       />
       {author?.name && (
