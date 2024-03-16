@@ -37,8 +37,8 @@ const Layout = ({ location, title, subtitle, children }) => {
         </div>
         <span style={{ flexGrow: 1 }} />
         <div className="main-contacts">
-          <IconButton width="2em" height="2em" link={`https://github.com/${data.site.siteMetadata.social?.github}`} icon={faGithub} />
-          <IconButton width="2em" height="2em" link={`mailto:${data.site.siteMetadata.social?.email}`} icon={faEnvelope} />
+          <IconButton width="2em" height="2em" link={`https://github.com/${data.site.siteMetadata.social?.github}`} icon={faGithub} alt="github" />
+          <IconButton width="2em" height="2em" link={`mailto:${data.site.siteMetadata.social?.email}`} icon={faEnvelope} alt="email" />
         </div>
       </>
     )
