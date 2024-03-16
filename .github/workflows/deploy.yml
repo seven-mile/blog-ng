@@ -23,6 +23,5 @@ jobs:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           git-config-name: seven-mile
           git-config-email: i@7li.moe
-          skip-publish: true
           deploy-repo: seven-mile.github.io
           deploy-branch: master
