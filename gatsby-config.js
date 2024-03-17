@@ -124,5 +124,6 @@ module.exports = {
       },
     },
     `gatsby-source-local-git`,
+    `gatsby-transformer-typst`,
   ],
 }

@@ -15,7 +15,13 @@ config.autoAddCss = false; /* eslint-disable import/first */
 const BlogIndex = ({ data, location }) => {
   const siteTitle = data.site.siteMetadata?.title || `Title`
   const siteDescription = data.site.siteMetadata?.description || `Description`
-  const posts = data.allMarkdownRemark.nodes
+  const posts = [...data.allMarkdownRemark.nodes, ...data.allTypst.nodes]
+  posts.sort((a, b) => {
+    const dateA = new Date(a.frontmatter.date)
+    const dateB = new Date(b.frontmatter.date)
+    // Sort in descending order
+    return dateB - dateA
+  })
 
   if (posts.length === 0) {
     return (
@@ -86,6 +92,19 @@ export const pageQuery = graphql`
       }
     }
     allMarkdownRemark(sort: { frontmatter: { date: DESC } }) {
+      nodes {
+        excerpt
+        fields {
+          slug
+        }
+        frontmatter {
+          date(formatString: "MMMM DD, YYYY")
+          title
+          description
+        }
+      }
+    }
+    allTypst(sort: { frontmatter: { date: DESC } }) {
       nodes {
         excerpt
         fields {
