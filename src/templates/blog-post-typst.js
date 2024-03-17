@@ -12,7 +12,7 @@ const BlogPostTemplate = ({
 }) => {
   const siteTitle = site.siteMetadata?.title || `Title`
 
-  const [artifactData, setArtifactData] = React.useState(null)
+  const [artifactData, setArtifactData] = React.useState(undefined)
 
   React.useEffect(() => {
     fetch(post.artifact)
@@ -35,7 +35,7 @@ const BlogPostTemplate = ({
           <p>{post.frontmatter.date}</p>
         </header>
         <section itemProp="articleBody">
-          <TypstDocument artifact={artifactData} />
+          <TypstDocument artifact={artifactData} domScale={1.17} />
         </section>
         <hr />
         <footer>

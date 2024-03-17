@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import * as typst from '@myriaddreamin/typst.ts';
 
 export interface TypstDocumentProps {
-  artifact: ArrayBuffer | null;
+  artifact: ArrayBuffer | undefined;
+  domScale: number | undefined;
 }
 
-export const TypstDocument = ({ artifact }: TypstDocumentProps) => {
+export const TypstDocument = ({ artifact, domScale }: TypstDocumentProps) => {
   /// --- beg: manipulate permission --- ///
 
   // todo: acquire permission
@@ -60,7 +61,7 @@ export const TypstDocument = ({ artifact }: TypstDocumentProps) => {
                   renderSession: ses,
                   container: displayDivRef.current!,
                   pixelPerPt: 4.5,
-                  domScale: 1.5,
+                  domScale: domScale ?? 1.0,
                 });
 
                 dom.then((dom) => {

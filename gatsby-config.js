@@ -124,6 +124,11 @@ module.exports = {
       },
     },
     `gatsby-source-local-git`,
-    `gatsby-transformer-typst`,
+    {
+      resolve: `gatsby-transformer-typst`,
+      options: {
+        domScale: 1.17,
+      }
+    },
   ],
 }
