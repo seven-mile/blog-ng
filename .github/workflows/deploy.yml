@@ -14,10 +14,84 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # Typst.ts: Pull dependencies and link packages
+      - name: Checkout typst.ts
+        uses: actions/checkout@v4
+        with:
+          repository: 'seven-mile/typst.ts'
+          submodules: 'true'
+          path: typst.ts
+          ref: blog-ng
+      - name: Install Mold
+        uses: rui314/setup-mold@v1
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install Rust for Wasm targets
+        run: rustup target add wasm32-unknown-unknown
+      - name: Set Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | bash
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.3
+      - name: Install packages for typst.ts
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install
+          dir: typst.ts
+      - name: Link typst-ts-variables packages
+        working-directory: typst.ts
+        run: |
+          cargo run --bin typst-ts-cli -- package link --manifest ./contrib/templates/variables/typst.toml
+      - name: Build Typescript packages for typst.ts
+        working-directory: typst.ts
+        run: |
+          yarn run build:pkg
+      - name: Setup package links for typst.ts
+        run: |
+          yarn link --cwd ./typst.ts/packages/typst.ts
+          yarn link --cwd ./typst.ts/packages/typst.node
+          yarn link --cwd ./typst.ts/packages/renderer
+
+      # gatsby-transformer-typst
+      - name: Checkout gatsby-transformer-typst
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+          path: gatsby-transformer-typst
+          repository: seven-mile/gatsby-transformer-typst
+      - name: Link typst.ts packages for plugin
+        working-directory: gatsby-transformer-typst
+        run: |
+          yarn link @myriaddreamin/typst.ts @myriaddreamin/typst-ts-renderer @myriaddreamin/typst-ts-node-compiler
+      - name: Install packages for gatsby-transformer-typst
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install
+          dir: gatsby-transformer-typst
+      - name: Build gatsby-transformer-typst
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: build
+          dir: gatsby-transformer-typst
+      - name: Setup package links for gatsby-transformer-typst
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: link
+          dir: gatsby-transformer-typst
+      
+      # pull blog repo and deploy
+      - uses: actions/checkout@v4
         with:
           submodules: 'true'
           token: ${{ secrets.ACCESS_TOKEN }}
+          path: blog-ng
+      - name: Link all packages for blog
+        working-directory: blog-ng
+        run: |
+          yarn link @myriaddreamin/typst.ts @myriaddreamin/typst-ts-renderer @myriaddreamin/typst-ts-node-compiler gatsby-transformer-typst
       - uses: enriikke/gatsby-gh-pages-action@v2
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
@@ -25,3 +99,4 @@ jobs:
           git-config-email: i@7li.moe
           deploy-repo: seven-mile.github.io
           deploy-branch: master
+          working-dir: blog-ng
