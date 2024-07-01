@@ -20,7 +20,7 @@ jobs:
           sudo apt-get install -y fonts-noto-cjk fonts-noto-cjk-extra
           fc-cache -f -v
 
-      # Typst.ts: Pull dependencies and link packages
+      # Checkout git repos
       - name: Checkout typst.ts
         uses: actions/checkout@v4
         with:
@@ -28,6 +28,14 @@ jobs:
           submodules: 'true'
           path: typst.ts
           ref: blog-ng
+      - name: Checkout gatsby-transformer-typst
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+          path: gatsby-transformer-typst
+          repository: seven-mile/gatsby-transformer-typst
+      
+      # Typst.ts: Pull dependencies and link packages
       - name: Install Mold
         uses: rui314/setup-mold@v1
       - name: Install Rust
@@ -50,8 +58,7 @@ jobs:
       - name: Link typst-ts-variables packages
         working-directory: typst.ts
         run: |
-          cargo run --bin typst-ts-cli -- package link --manifest ./contrib/templates/variables/typst.toml
-          cargo run --bin typst-ts-cli -- font list
+          cargo run --bin typst-ts-cli -- package link --manifest ../gatsby-transformer-typst/contrib/variables/typst.toml
       - name: Build Typescript packages for typst.ts
         working-directory: typst.ts
         run: |
@@ -63,12 +70,6 @@ jobs:
           yarn link --cwd ./typst.ts/packages/renderer
 
       # gatsby-transformer-typst
-      - name: Checkout gatsby-transformer-typst
-        uses: actions/checkout@v4
-        with:
-          submodules: 'true'
-          path: gatsby-transformer-typst
-          repository: seven-mile/gatsby-transformer-typst
       - name: Link typst.ts packages for plugin
         working-directory: gatsby-transformer-typst
         run: |
