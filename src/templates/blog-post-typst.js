@@ -7,7 +7,7 @@ import Seo from "../components/seo"
 import { TypstDocument } from "../components/typst-doc"
 
 const BlogPostTemplate = ({
-  data: { previous, next, site, typst: post },
+  data: { previous, next, site, post },
   location,
 }) => {
   const siteTitle = site.siteMetadata?.title || `Title`
@@ -15,7 +15,7 @@ const BlogPostTemplate = ({
   const [artifactData, setArtifactData] = React.useState(undefined)
 
   React.useEffect(() => {
-    fetch(post.artifact)
+    fetch(post.source.artifact)
       .then(response => response.arrayBuffer())
       .then(data => {
         console.log('fetch got artifact data with length', data.byteLength)
@@ -54,14 +54,14 @@ const BlogPostTemplate = ({
         >
           <li>
             {previous && (
-              <Link to={previous.fields.slug} rel="prev">
+              <Link to={previous.slug} rel="prev">
                 ← {previous.frontmatter.title}
               </Link>
             )}
           </li>
           <li>
             {next && (
-              <Link to={next.fields.slug} rel="next">
+              <Link to={next.slug} rel="next">
                 {next.frontmatter.title} →
               </Link>
             )}
@@ -72,7 +72,7 @@ const BlogPostTemplate = ({
   )
 }
 
-export const Head = ({ data: { typst: post } }) => {
+export const Head = ({ data: { post } }) => {
   return (
     <Seo
       title={post.frontmatter.title}
@@ -94,28 +94,28 @@ export const pageQuery = graphql`
         title
       }
     }
-    typst(id: { eq: $id }) {
+    post(id: { eq: $id }) {
       id
       excerpt
-      artifact
+      source {
+        ... on Typst {
+          artifact
+        }
+      }
       frontmatter {
         title
         date(formatString: "MMMM DD, YYYY")
         description
       }
     }
-    previous: typst(id: { eq: $previousPostId }) {
-      fields {
-        slug
-      }
+    previous: post(id: { eq: $previousPostId }) {
+      slug
       frontmatter {
         title
       }
     }
-    next: typst(id: { eq: $nextPostId }) {
-      fields {
-        slug
-      }
+    next: post(id: { eq: $nextPostId }) {
+      slug
       frontmatter {
         title
       }

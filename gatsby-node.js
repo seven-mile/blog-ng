@@ -6,6 +6,7 @@
 
 const path = require(`path`)
 const { createFilePath } = require(`gatsby-source-filesystem`)
+const { graphql } = require('gatsby')
 
 // Define the template for blog post
 const blogPostMarkdown = path.resolve(`./src/templates/blog-post-md.js`)
@@ -20,19 +21,14 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   // Get all markdown blog posts sorted by date
   const result = await graphql(`
     {
-      allMarkdownRemark(sort: { frontmatter: { date: ASC } }, limit: 1000) {
+      allPost(sort: { frontmatter: { date: ASC } }, limit: 1000) {
         nodes {
           id
-          fields {
-            slug
-          }
-        }
-      }
-      allTypst(sort: { frontmatter: { date: ASC } }, limit: 1000) {
-        nodes {
-          id
-          fields {
-            slug
+          slug
+          source {
+            internal {
+              type
+            }
           }
         }
       }
@@ -50,43 +46,64 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   // Create blog posts pages
   // But only if there's at least one markdown file found at "content/blog" (defined in gatsby-config.js)
   // `context` is available in the template as a prop and as a variable in GraphQL
+  const posts = result.data.allPost.nodes;
 
-  const useTemplate = (posts, template) => {
-    posts.forEach((post, index) => {
-      const previousPostId = index === 0 ? null : posts[index - 1].id
-      const nextPostId = index === posts.length - 1 ? null : posts[index + 1].id
+  const resolveTemplate = (post) => {
+    if (post.internal.type === 'MarkdownRemark') {
+      return blogPostMarkdown;
+    } else if (post.internal.type === 'Typst') {
+      return blogPostTypst;
+    } else {
+      throw new Error(`Unknown post type: ${post.internal.type}`);
+    }
+  }
 
-      createPage({
-        path: post.fields.slug,
-        component: template,
-        context: {
-          id: post.id,
-          previousPostId,
-          nextPostId,
-        },
-      })
-    });
-  };
+  posts.forEach((post, index) => {
+    const previousPostId = index === 0 ? null : posts[index - 1].id
+    const nextPostId = index === posts.length - 1 ? null : posts[index + 1].id
 
-  useTemplate(result.data.allMarkdownRemark.nodes, blogPostMarkdown)
-  useTemplate(result.data.allTypst.nodes, blogPostTypst)
+    createPage({
+      path: post.slug,
+      component: resolveTemplate(post.source),
+      context: {
+        id: post.id,
+        previousPostId,
+        nextPostId,
+      },
+    })
+  });
 }
 
 /**
  * @type {import('gatsby').GatsbyNode['onCreateNode']}
  */
-exports.onCreateNode = ({ node, actions, getNode }) => {
-  const { createNodeField } = actions
+exports.onCreateNode = ({ node, actions, getNode, createNodeId, createContentDigest }) => {
+  const { createNodeField, createNode } = actions
 
   if (node.internal.type === `MarkdownRemark`
-   || node.internal.type === `Typst`) {
-    const value = createFilePath({ node, getNode })
+    || node.internal.type === `Typst`) {
+    const value = createFilePath({ node, getNode });
 
     createNodeField({
       name: `slug`,
       node,
       value,
-    })
+    });
+
+    const postNode = {
+      id: createNodeId(`${node.id} >> Post`),
+      children: [],
+      internal: {
+        type: `Post`
+      },
+      frontmatter: node.frontmatter,
+      excerpt: node.excerpt,
+      slug: value,
+      source: node.id
+    };
+    postNode.internal.contentDigest = createContentDigest(postNode);
+
+    createNode(postNode);
   }
 }
 
@@ -132,8 +149,14 @@ exports.createSchemaCustomization = ({ actions }) => {
       frontmatter: Frontmatter
       fields: Fields
       excerpt: String
-      html: String
       artifact: String
+    }
+
+    type Post implements Node {
+      frontmatter: Frontmatter
+      slug: String
+      excerpt: String
+      source: Node @link
     }
 
     type Frontmatter {

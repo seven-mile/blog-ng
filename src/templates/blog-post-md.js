@@ -6,7 +6,7 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 
 const BlogPostTemplate = ({
-  data: { previous, next, site, markdownRemark: post },
+  data: { previous, next, site, post },
   location,
 }) => {
   const siteTitle = site.siteMetadata?.title || `Title`
@@ -23,7 +23,7 @@ const BlogPostTemplate = ({
           <p>{post.frontmatter.date}</p>
         </header>
         <section
-          dangerouslySetInnerHTML={{ __html: post.html }}
+          dangerouslySetInnerHTML={{ __html: post.source.html }}
           itemProp="articleBody"
         />
         <hr />
@@ -43,14 +43,14 @@ const BlogPostTemplate = ({
         >
           <li>
             {previous && (
-              <Link to={previous.fields.slug} rel="prev">
+              <Link to={previous.slug} rel="prev">
                 ← {previous.frontmatter.title}
               </Link>
             )}
           </li>
           <li>
             {next && (
-              <Link to={next.fields.slug} rel="next">
+              <Link to={next.slug} rel="next">
                 {next.frontmatter.title} →
               </Link>
             )}
@@ -61,7 +61,7 @@ const BlogPostTemplate = ({
   )
 }
 
-export const Head = ({ data: { markdownRemark: post } }) => {
+export const Head = ({ data: { post } }) => {
   return (
     <Seo
       title={post.frontmatter.title}
@@ -83,28 +83,28 @@ export const pageQuery = graphql`
         title
       }
     }
-    markdownRemark(id: { eq: $id }) {
+    post(id: { eq: $id }) {
       id
-      excerpt(pruneLength: 160)
-      html
+      excerpt
+      source {
+        ... on MarkdownRemark {
+          html
+        }
+      }
       frontmatter {
         title
         date(formatString: "MMMM DD, YYYY")
         description
       }
     }
-    previous: markdownRemark(id: { eq: $previousPostId }) {
-      fields {
-        slug
-      }
+    previous: post(id: { eq: $previousPostId }) {
+      slug
       frontmatter {
         title
       }
     }
-    next: markdownRemark(id: { eq: $nextPostId }) {
-      fields {
-        slug
-      }
+    next: post(id: { eq: $nextPostId }) {
+      slug
       frontmatter {
         title
       }

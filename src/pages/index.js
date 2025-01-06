@@ -15,13 +15,7 @@ config.autoAddCss = false; /* eslint-disable import/first */
 const BlogIndex = ({ data, location }) => {
   const siteTitle = data.site.siteMetadata?.title || `Title`
   const siteDescription = data.site.siteMetadata?.description || `Description`
-  const posts = [...data.allMarkdownRemark.nodes, ...data.allTypst.nodes]
-  posts.sort((a, b) => {
-    const dateA = new Date(a.frontmatter.date)
-    const dateB = new Date(b.frontmatter.date)
-    // Sort in descending order
-    return dateB - dateA
-  })
+  const posts = data.allPost.nodes
 
   if (posts.length === 0) {
     return (
@@ -40,10 +34,10 @@ const BlogIndex = ({ data, location }) => {
     <Layout location={location} title={siteTitle} subtitle={siteDescription}>
       <ol style={{ listStyle: `none` }}>
         {posts.map(post => {
-          const title = post.frontmatter.title || post.fields.slug
+          const title = post.frontmatter.title || post.slug
 
           return (
-            <li key={post.fields.slug}>
+            <li key={post.slug}>
               <article
                 className="post-list-item"
                 itemScope
@@ -51,7 +45,7 @@ const BlogIndex = ({ data, location }) => {
               >
                 <header>
                   <h2>
-                    <Link to={post.fields.slug} itemProp="url">
+                    <Link to={post.slug} itemProp="url">
                       <span itemProp="headline">{title}</span>
                     </Link>
                   </h2>
@@ -91,25 +85,10 @@ export const pageQuery = graphql`
         description
       }
     }
-    allMarkdownRemark(sort: { frontmatter: { date: DESC } }) {
+    allPost(sort: { frontmatter: { date: DESC } }) {
       nodes {
         excerpt
-        fields {
-          slug
-        }
-        frontmatter {
-          date(formatString: "MMMM DD, YYYY")
-          title
-          description
-        }
-      }
-    }
-    allTypst(sort: { frontmatter: { date: DESC } }) {
-      nodes {
-        excerpt
-        fields {
-          slug
-        }
+        slug
         frontmatter {
           date(formatString: "MMMM DD, YYYY")
           title
