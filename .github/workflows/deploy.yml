@@ -20,41 +20,12 @@ jobs:
           sudo apt-get install -y fonts-noto-cjk fonts-noto-cjk-extra
           fc-cache -f -v
 
-      # Checkout git repos
-      - name: Checkout gatsby-transformer-typst
-        uses: actions/checkout@v4
-        with:
-          submodules: 'true'
-          path: gatsby-transformer-typst
-          repository: seven-mile/gatsby-transformer-typst
-
-      # Prepare gatsby-transformer-typst
-      - name: Install packages for gatsby-transformer-typst
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
-          dir: gatsby-transformer-typst
-      - name: Build gatsby-transformer-typst
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: build
-          dir: gatsby-transformer-typst
-      - name: Setup package links for gatsby-transformer-typst
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: link
-          dir: gatsby-transformer-typst
-      
       # Pull blog repo and deploy
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
           token: ${{ secrets.ACCESS_TOKEN }}
           path: blog-ng
-      - name: Link all packages for blog
-        working-directory: blog-ng
-        run: |
-          yarn link gatsby-transformer-typst
       - uses: enriikke/gatsby-gh-pages-action@v2
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
