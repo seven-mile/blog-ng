@@ -6,7 +6,6 @@
 
 const path = require(`path`)
 const { createFilePath } = require(`gatsby-source-filesystem`)
-const { graphql } = require('gatsby')
 
 // Define the template for blog post
 const blogPostMarkdown = path.resolve(`./src/templates/blog-post-md.js`)

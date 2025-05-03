@@ -4,7 +4,7 @@ import { Link, graphql } from "gatsby"
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
-import { TypstDocument } from "../components/typst-doc"
+import { TypstPageHead, TypstDocument } from "gatsby-transformer-typst/typst-doc"
 
 const BlogPostTemplate = ({
   data: { previous, next, site, post },
@@ -35,7 +35,7 @@ const BlogPostTemplate = ({
           <p>{post.frontmatter.date}</p>
         </header>
         <section itemProp="articleBody">
-          <TypstDocument artifact={artifactData} domScale={1.17} />
+          <TypstDocument artifact={artifactData} />
         </section>
         <hr />
         <footer>
@@ -74,10 +74,13 @@ const BlogPostTemplate = ({
 
 export const Head = ({ data: { post } }) => {
   return (
-    <Seo
-      title={post.frontmatter.title}
-      description={post.frontmatter.description || post.excerpt}
-    />
+    <>
+      <Seo
+        title={post.frontmatter.title}
+        description={post.frontmatter.description || post.excerpt}
+      />
+      <TypstPageHead />
+    </>
   )
 }
 
